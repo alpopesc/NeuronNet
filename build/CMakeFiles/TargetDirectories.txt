@@ -1,6 +1,0 @@
-/home/alpopesc/myfiles/Programmation/Ba3/Small_Project/NeuronNet/build/CMakeFiles/rebuild_cache.dir
-/home/alpopesc/myfiles/Programmation/Ba3/Small_Project/NeuronNet/build/CMakeFiles/test.dir
-/home/alpopesc/myfiles/Programmation/Ba3/Small_Project/NeuronNet/build/CMakeFiles/doc.dir
-/home/alpopesc/myfiles/Programmation/Ba3/Small_Project/NeuronNet/build/CMakeFiles/edit_cache.dir
-/home/alpopesc/myfiles/Programmation/Ba3/Small_Project/NeuronNet/build/CMakeFiles/NeuronNet.dir
-/home/alpopesc/myfiles/Programmation/Ba3/Small_Project/NeuronNet/build/CMakeFiles/testNeuronNet.dir

@@ -128,3 +128,81 @@ void Network::print_traj(const int time, const std::map<std::string, size_t> &_n
             }
     (*_out) << std::endl;
 }
+
+std::pair<size_t, double> Network::degree(const size_t& inx) const
+{
+	double in(0);
+	std::vector<std::pair<size_t, double>> vec;
+	vec = neighbors(inx);
+	size_t n(vec.size());
+	
+	for(size_t i(0); i < vec.size(); i++){
+			in = in + vec[i].second;
+		}
+
+	return 	std::pair<size_t, double> (n, in);
+}
+
+std::vector<std::pair<size_t, double>> Network::neighbors(const size_t& inx) const
+{
+	std::vector<std::pair<size_t, double>> res;
+	for (auto it = links.cbegin(); it != links.cend(); ++it){
+		
+		if((it->first).first == inx){
+			std::pair<size_t, double> sub_res((it->first).second, it->second);
+			res.push_back(sub_res);
+		}
+		//Do I need this operation ??????????????????????????????????????
+		if((it->first).second == inx){
+			std::pair<size_t, double> sub_res((it->first).second, it->second);
+			res.push_back(sub_res);
+		}			
+	}
+	return res;
+}
+
+std::pair<double,double> Network::i_firing(const size_t& inx)const{
+
+	std::vector<std::pair<size_t, double>> vec = neighbors(inx);
+	std::pair<double,double> total_i;
+	for(size_t i(0); i < vec.size(); ++i){
+		if(neurons[vec[i].first].firing()){
+			if(neurons[vec[i].first].is_inhibitory()){
+				total_i.second += vec[i].second;
+			}else{
+				total_i.first += vec[i].second;
+			}
+		}
+	}
+	return total_i;
+}
+
+std::set<size_t> Network::step(const std::vector<double>& vec)
+{	
+	double _input(0);
+	double w(0);
+	std::set<size_t> ret;
+		
+	for(size_t i(0); i< neurons.size(); i++){
+		if(neurons[i].firing()){
+			ret.insert(i);
+			neurons[i].reset();
+		}
+	}
+		
+	for(size_t i(0); i < neurons.size(); ++i){
+				
+		if(neurons[i].is_inhibitory()){
+			w = 0.4;
+		}else{
+			w = 1;
+		}
+		std::pair<double, double> help(i_firing(i));
+		_input = w*vec[i] + 0.5*(i_firing(i).first) + i_firing(i).second;	
+		neurons[i].input(_input);
+		neurons[i].step();
+		
+	}
+	
+	return ret;
+}

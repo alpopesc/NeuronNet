@@ -1,6 +1,10 @@
+#ifndef RANDOM_HPP
+#define RANDOM_HPP
+
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <string>
 
 /*! \class RandomNumbers
   This is a random number class based on standard c++-11 generators.
@@ -49,3 +53,5 @@ private:
 };
 
 extern RandomNumbers* _RNG;
+
+#endif
