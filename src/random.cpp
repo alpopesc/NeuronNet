@@ -1,17 +1,16 @@
 #include "random.h"
 
-RandomNumbers::RandomNumbers(unsigned long int s) 
+RandomNumbers::RandomNumbers(unsigned long int s)
 {
-	if (seed == 0) {
+	if( s > 0 )
+		rng = std::mt19937(s);
+	else {
 		std::random_device rd;
-		seed = rd();
-	}else{
-		seed = s;
+		rng = std::mt19937(rd());
 	}
-	rng = std::mt19937(seed);
 }
-// I took the solution from class
 
+// I took the solution from class
 
 void RandomNumbers::uniform_double(std::vector<double>& vec, double lower, double upper)
 {
@@ -54,6 +53,5 @@ int RandomNumbers::poisson(double mean)
 	std::poisson_distribution<int> distribution(mean);
 	return distribution(rng);
 }
-
 
 

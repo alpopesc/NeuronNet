@@ -88,6 +88,7 @@ TEST(networkTest, connect) {
         net.step(noisev);
         ifirs += (int)net.neuron(inhib1).firing();
         efirs += (int)net.neuron(excit_idx).firing();
+        std::cout << ifirs << "   " << efirs << std::endl;
     }
     EXPECT_EQ(1, ifirs);
     EXPECT_EQ(1, efirs);

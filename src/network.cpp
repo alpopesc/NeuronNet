@@ -4,6 +4,7 @@
 void Network::resize(const size_t &n, double inhib) {
     size_t old = size();
     neurons.resize(n);
+    connections.resize(n); //To avoid segmentation fault
     if (n <= old) return;
     size_t nfs(inhib*(n-old)+.5);
     set_default_params({{"FS", nfs}}, old);
@@ -129,7 +130,7 @@ void Network::print_traj(const int time, const std::map<std::string, size_t> &_n
     (*_out) << std::endl;
 }
 
-std::pair<size_t, double> Network::degree(const size_t& inx) const
+std::pair<size_t, double> Network::degree(const size_t& inx) 
 {
 	double in(0);
 	std::vector<std::pair<size_t, double>> vec;
@@ -143,25 +144,36 @@ std::pair<size_t, double> Network::degree(const size_t& inx) const
 	return 	std::pair<size_t, double> (n, in);
 }
 
-std::vector<std::pair<size_t, double>> Network::neighbors(const size_t& inx) const
+/*If the connection do not change over time it would have been maybe better
+ * to initialise the connections at the beginning of the class with a constrcutor.
+ * However this initalisation could take a lot of time since the complexity would be n^2
+ * for n neurons. Something to change at the end maybe */
+std::vector<std::pair<size_t, double>> Network::neighbors(const size_t& inx)
 {
+	if(/*not connections.empty() and*/ not connections[inx].empty()){
+		return connections[inx];
+	}
+	
 	std::vector<std::pair<size_t, double>> res;
-	for (auto it = links.cbegin(); it != links.cend(); ++it){
-		
+	for (auto it = links.lower_bound({inx,0}); it != links.upper_bound({inx, neurons.size()}); ++it){
+		//Now it looks much better
 		if((it->first).first == inx){
 			std::pair<size_t, double> sub_res((it->first).second, it->second);
 			res.push_back(sub_res);
 		}
-		//Do I need this operation ??????????????????????????????????????
+		/*
 		if((it->first).second == inx){
 			std::pair<size_t, double> sub_res((it->first).second, it->second);
 			res.push_back(sub_res);
-		}			
+		}	
+		*/		
 	}
-	return res;
+	connections[inx] = res;
+	return connections[inx];
 }
 
-std::pair<double,double> Network::i_firing(const size_t& inx)const{
+std::pair<double,double> Network::i_firing(const size_t& inx)
+{
 
 	std::vector<std::pair<size_t, double>> vec = neighbors(inx);
 	std::pair<double,double> total_i;
