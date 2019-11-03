@@ -100,7 +100,11 @@ public:
                     std::ostream *_out=&std::cout);
     void print_head(const std::map<std::string, size_t>&, 
                     std::ostream *_out=&std::cout);
-	
+/*! 
+  Calculates the intensity of the inhibitory and excitatory connections to neuron inx.
+  \param input : index of neuron of interest
+  \return pair of intensities of excitatory(first) and inhibitory(second) connections to inx
+ */
 	std::pair<double,double> i_firing(const size_t& inx);
 
 private:

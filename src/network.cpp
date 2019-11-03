@@ -138,35 +138,26 @@ std::pair<size_t, double> Network::degree(const size_t& inx)
 	size_t n(vec.size());
 	
 	for(size_t i(0); i < vec.size(); i++){
-			in = in + vec[i].second;
-		}
-
+			in += vec[i].second;
+	}
 	return 	std::pair<size_t, double> (n, in);
 }
 
-/*If the connection do not change over time it would have been maybe better
- * to initialise the connections at the beginning of the class with a constrcutor.
- * However this initalisation could take a lot of time since the complexity would be n^2
- * for n neurons. Something to change at the end maybe */
+/* Small remark: neighbours and degree are not const anymore because  
+ * otherwise I could not have implemented dynamic programming which improves 
+ * the speed of the program. */
 std::vector<std::pair<size_t, double>> Network::neighbors(const size_t& inx)
 {
-	if(/*not connections.empty() and*/ not connections[inx].empty()){
+	if(not connections[inx].empty()){
 		return connections[inx];
 	}
 	
 	std::vector<std::pair<size_t, double>> res;
 	for (auto it = links.lower_bound({inx,0}); it != links.upper_bound({inx, neurons.size()}); ++it){
-		//Now it looks much better
 		if((it->first).first == inx){
 			std::pair<size_t, double> sub_res((it->first).second, it->second);
 			res.push_back(sub_res);
-		}
-		/*
-		if((it->first).second == inx){
-			std::pair<size_t, double> sub_res((it->first).second, it->second);
-			res.push_back(sub_res);
-		}	
-		*/		
+		}			
 	}
 	connections[inx] = res;
 	return connections[inx];
@@ -174,7 +165,6 @@ std::vector<std::pair<size_t, double>> Network::neighbors(const size_t& inx)
 
 std::pair<double,double> Network::i_firing(const size_t& inx)
 {
-
 	std::vector<std::pair<size_t, double>> vec = neighbors(inx);
 	std::pair<double,double> total_i;
 	for(size_t i(0); i < vec.size(); ++i){
@@ -200,21 +190,19 @@ std::set<size_t> Network::step(const std::vector<double>& vec)
 			ret.insert(i);
 			neurons[i].reset();
 		}
-	}
-		
-	for(size_t i(0); i < neurons.size(); ++i){
+	}	
+	
+	for(size_t i(0); i < neurons.size(); i++){
 				
 		if(neurons[i].is_inhibitory()){
 			w = 0.4;
 		}else{
 			w = 1;
 		}
-		std::pair<double, double> help(i_firing(i));
-		_input = w*vec[i] + 0.5*(i_firing(i).first) + i_firing(i).second;	
+		std::pair<double, double> help(i_firing(i)); 
+		_input = w*vec[i] + 0.5*(help.first) + help.second;	
 		neurons[i].input(_input);
-		neurons[i].step();
-		
+		neurons[i].step();	
 	}
-	
 	return ret;
 }
